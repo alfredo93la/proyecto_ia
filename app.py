@@ -1,0 +1,145 @@
+import numpy as np
+from flask import Flask, request, jsonify, render_template
+from keras.models import load_model
+import joblib
+
+app = Flask(__name__)
+
+# --- CARGA DEL MODELO Y ESCALADOR ---
+model = load_model('modelo_dropout.h5')
+scaler = joblib.load('scaler.pkl')
+
+def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anterior, semestre, creditos, periodos_restantes):
+    """
+    Sistema Híbrido Completo: IA + Matemáticas (Viabilidad) + Reglas de Trayectoria
+    """
+    recomendaciones = []
+    
+    # CONSTANTES ESCOM
+    TOTAL_CREDITOS = 387.0
+    CARGA_MAXIMA = 78.0
+    CARGA_MEDIA = 48.0
+    
+    creditos_faltantes = TOTAL_CREDITOS - creditos
+    avance_pct = (creditos / TOTAL_CREDITOS) * 100
+
+    # ---------------------------------------------------------
+    # 1. ANÁLISIS DE VIABILIDAD MATEMÁTICA (CRÍTICO - PERIODOS)
+    # ---------------------------------------------------------
+    velocidad_necesaria = 0
+    if periodos_restantes > 0:
+        velocidad_necesaria = creditos_faltantes / periodos_restantes
+        
+        if creditos_faltantes <= 0:
+            recomendaciones.append("**¡FELICIDADES!** Has cubierto el 100% de créditos. Inicia trámite de certificado.")
+        elif velocidad_necesaria > CARGA_MAXIMA:
+            recomendaciones.append(f"**IMPOSIBLE TERMINAR:** Matemáticamente no puedes acabar. Necesitas {velocidad_necesaria:.1f} créditos/semestre y el máximo es {CARGA_MAXIMA}. Revisa reglamento.")
+        elif velocidad_necesaria > (CARGA_MAXIMA - 15):
+            recomendaciones.append(f"**ALERTA MÁXIMA:** Estás al límite. Necesitas meter {velocidad_necesaria:.1f} créditos (Sobrecarga) todos los semestres restantes.")
+        elif velocidad_necesaria > (CARGA_MEDIA + 5):
+            recomendaciones.append(f"**Acelerar Paso:** Necesitas promediar {velocidad_necesaria:.1f} créditos por semestre (más de la carga media).")
+    else:
+        if creditos_faltantes > 0:
+            recomendaciones.append("**TIEMPO AGOTADO:** Se acabaron tus periodos reglamentarios y aún debes créditos. Situación de Dictamen.")
+
+    # ---------------------------------------------------------
+    # 2. ANÁLISIS DE RIESGO (IA)
+    # ---------------------------------------------------------
+    if probabilidad > 60:
+        recomendaciones.append("**Alerta Crítica (IA):** Riesgo muy alto detectado por patrones históricos.")
+    elif probabilidad > 40:
+        recomendaciones.append("**Atención:** Estás en zona de riesgo. No descuides materias.")
+
+    # ---------------------------------------------------------
+    # 3. ANÁLISIS DE TRAYECTORIA (RESTAURADO)
+    # ---------------------------------------------------------
+    # Compara si el alumno bajó su rendimiento respecto a su histórico
+    if promedio_anterior < (promedio_general - 1.0):
+        recomendaciones.append("**Tendencia Negativa:** Tu rendimiento reciente cayó drásticamente respecto a tu promedio general.")
+    elif promedio_anterior > (promedio_general + 0.5):
+        recomendaciones.append("**Tendencia Positiva:** ¡Bien! Estás subiendo tu promedio respecto a tu histórico.")
+
+    if promedio_general < 6.0:
+        recomendaciones.append("• **Tutorías:** Tienes promedio crítico. Inscríbete al programa de tutorías institucional.")
+
+    # ---------------------------------------------------------
+    # 4. HITOS CURRICULARES (SAES)
+    # ---------------------------------------------------------
+    if 60 <= avance_pct < 70:
+        recomendaciones.append(f"• **Servicio Social:** Tienes {avance_pct:.1f}% de avance. Estás cerca de poder iniciar tu Servicio Social.")
+    
+    if avance_pct >= 70:
+        recomendaciones.append("• **Titulación:** Superaste el 70%. Ya puedes iniciar tu Servicio Social. Empieza a buscar tema de Trabajo Terminal.")
+
+    # ---------------------------------------------------------
+    # 5. REGLAS GENERALES
+    # ---------------------------------------------------------
+    if debtor == 1:
+        if semestre >= 9:
+             recomendaciones.append("• **Dictamen:** Tienes adeudos y estás en semestres finales. Revisa tu tiempo máximo.")
+        else:
+             recomendaciones.append("• **Regularización:** Prioriza salvar materias en ETS antes de adelantar nuevas.")
+
+    # Mensaje por defecto
+    if not recomendaciones:
+        recomendaciones.append(f"✅ **Mantenimiento:** Buen ritmo. Necesitas {velocidad_necesaria:.1f} créditos/semestre para graduarte a tiempo.")
+
+    return recomendaciones
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        data = request.json
+        
+        # Extracción de variables
+        semestre = int(data['semestre'])
+        turno = float(data['turno'])
+        debtor = float(data['debtor'])
+        scholarship = float(data['scholarship'])
+        age = float(data['age'])
+        promedio_general = float(data['promedio_general'])
+        promedio_anterior = float(data['promedio_anterior'])
+        
+        # Variables SAES
+        creditos = float(data['creditos'])
+        periodos_restantes = int(data['periodos_restantes'])
+        
+        # Vector para la IA (34 neuronas)
+        input_data = np.zeros((1, 34))
+        input_data += 0.5 
+        
+        # Mapeo
+        input_data[0, 4] = turno
+        input_data[0, 13] = debtor
+        input_data[0, 14] = 1.0       
+        input_data[0, 16] = scholarship
+        input_data[0, 17] = age
+        input_data[0, 23] = promedio_general * 2  
+        input_data[0, 29] = promedio_anterior * 2 
+
+        # Predicción
+        input_scaled = scaler.transform(input_data)
+        prediction_prob = model.predict(input_scaled)[0][0]
+        percentage = round(prediction_prob * 100, 2)
+        
+        risk_level = "RIESGO ALTO" if percentage > 50 else "ESTABLE"
+        
+        # Generar Consejos con TODAS las variables
+        consejos = generar_recomendacion(percentage, debtor, promedio_general, promedio_anterior, semestre, creditos, periodos_restantes)
+
+        return jsonify({
+            'probability': percentage,
+            'risk': risk_level,
+            'advice': consejos
+        })
+
+    except Exception as e:
+        print(f"ERROR SERVIDOR: {e}")
+        return jsonify({'error': str(e)})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,0 +1,73 @@
+:root {
+    --primary-color: #6c1d45; /* Guinda Institucional */
+    --secondary-color: #f0f2f5;
+    --accent-color: #bc955c; /* Dorado Institucional */
+}
+
+body { 
+    background-color: var(--secondary-color); 
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #333;
+}
+
+.main-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    background: #fff;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.header-bg {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #4a0e2e 100%);
+    color: white;
+    padding: 20px;
+    border-bottom: 4px solid var(--accent-color);
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-predict {
+    background-color: var(--primary-color);
+    border: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-predict:hover {
+    background-color: #4a0e2e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(108, 29, 69, 0.3);
+}
+
+.result-panel {
+    display: none; /* Oculto al inicio */
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    height: 100%;
+}
+
+.badge-risk {
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 50px;
+}
+
+/* Animación suave */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

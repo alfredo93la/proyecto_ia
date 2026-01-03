@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Proyecto IA - ESCOM</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2c3e50;">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="bi bi-robot"></i> Proyecto IA - ESCOM
+        </a>
+        <span class="navbar-text text-light text-opacity-75">
+            Agente Inteligente para la Predicción de Deserción Escolar
+        </span>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center g-4">
+        
+        <div class="col-lg-5 d-flex"> <div class="card main-card w-100 shadow-sm">
+                <div class="header-bg">
+                    <h5 class="m-0"><i class="bi bi-person-lines-fill me-2"></i>Datos del Estudiante</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="predictionForm">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">CONTEXTO ACADÉMICO</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="small">Periodos escolares cursados</label>
+                                    <select class="form-select form-select-sm" id="semestre" required>
+                                        <option value=""></option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="small">Turno</label>
+                                    <select class="form-select form-select-sm" id="turno" required>
+                                        <option value=""></option>
+                                        <option value="1">Matutino</option>
+                                        <option value="0">Vespertino</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">ESTATUS</label>
+                            <select class="form-select" id="debtor" required>
+                                <option value=""></option>
+                                <option value="0">Regular (Sin adeudos)</option>
+                                <option value="1">Irregular (Con adeudos)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="text-muted border-bottom pb-2 mb-3"><i class="bi bi-graph-up-arrow me-1"></i> Rendimiento</h6>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small">Promedio General</label>
+                                    <input type="number" step="0.1" class="form-control fw-bold" id="promedio_general" placeholder="Acumulado" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">Promedio Sem. Anterior</label>
+                                    <input type="number" step="0.1" class="form-control fw-bold" id="promedio_anterior" placeholder="Último cursado" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">DATOS DEL SAES</label>
+                                <div class="row g-2">
+                                    <div class="col-7">
+                                        <label class="small">Créditos Obtenidos</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" step="0.5" class="form-control fw-bold" id="creditos" required>
+                                            <span class="input-group-text">/ 387</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-5">
+                                        <label class="small">Periodos Disp.</label>
+                                        <input type="number" class="form-control form-control-sm fw-bold border-warning" id="periodos_restantes" required>
+                                        <div class="form-text" style="font-size: 0.7rem;">Columna "Periodos escolares disponibles"</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label">¿Tiene Beca?</label>
+                                    <select class="form-select" id="scholarship" required>
+                                        <option value=""></option>
+                                        <option value="0">No</option>
+                                        <option value="1">Sí (Institucional/Ext)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Edad</label>
+                                    <input type="number" class="form-control" id="age" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-predict w-100 text-white py-2" style="background-color: #6c1d45;">
+                            <i class="bi bi-lightning-charge-fill"></i> ANALIZAR RIESGO
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7 d-flex">
+            <div class="card main-card w-100 shadow-sm border-0">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="m-0 text-dark"><i class="bi bi-activity me-2"></i>Diagnóstico del Sistema</h5>
+                </div>
+
+                <div class="card-body d-flex flex-column justify-content-center align-items-center position-relative p-0">
+                    
+                    <div id="state-waiting" class="text-center p-5">
+                        <div class="mb-3">
+                            <i class="bi bi-cpu display-1 text-light" style="font-size: 5rem; color: #e9ecef !important;"></i>
+                        </div>
+                        <h4 class="text-muted">Esperando datos...</h4>
+                        <p class="text-muted small">Complete el perfil a la izquierda para iniciar.</p>
+                    </div>
+
+                    <div id="state-result" class="w-100 h-100 p-4" style="display: none;">
+                        <div class="row h-100 align-items-center">
+                            
+                            <div class="col-md-5 text-center border-end">
+                                <div class="position-relative d-inline-block">
+                                    <canvas id="riskChart" style="max-height: 180px;"></canvas>
+                                    <div class="position-absolute top-50 start-50 translate-middle">
+                                        <h2 id="percentageText" class="fw-bold m-0 text-dark">0%</h2>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <span id="riskLabel" class="badge rounded-pill bg-secondary px-3 py-2">CALCULANDO</span>
+                                </div>
+                                <p class="small text-muted mt-2">Probabilidad de Deserción</p>
+                            </div>
+
+                            <div class="col-md-7 ps-md-4">
+                                <h6 class="fw-bold text-primary mb-3">
+                                    <i class="bi bi-robot me-1"></i> Recomendaciones:
+                                </h6>
+                                <div class="bg-light p-3 rounded-3 mb-3 border-start border-4 border-primary">
+                                    <ul id="adviceList" class="list-unstyled mb-0 small text-secondary">
+                                        </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+
+</body>
+</html>
