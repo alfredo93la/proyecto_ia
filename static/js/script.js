@@ -39,8 +39,27 @@ function renderChart(percentage) {
     });
 }
 
+function updatePeriodos() {
+    const periodosCursados = document.getElementById('periodos_cursados');
+    const periodosRestantes = document.getElementById('periodos_restantes');
+    
+    if (periodosCursados && periodosRestantes) {
+        const MAX_SEMESTRES = 12;
+        
+        let disponibles = MAX_SEMESTRES - parseInt(periodosCursados.value);
+        
+        if (disponibles < 0) disponibles = 0;
+        periodosRestantes.value = disponibles;
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
+    const periodosCursados = document.getElementById('periodos_cursados');
+    if (periodosCursados) {
+        updatePeriodos();
+        periodosCursados.addEventListener('change', updatePeriodos);
+    }
+
     // Configurar Formulario de Predicción
     const form = document.getElementById('predictionForm');
     if (form) {
@@ -60,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
             // Recolectar datos
             const data = {
-                semestre: document.getElementById('semestre').value,
+                periodos_cursados: document.getElementById('periodos_cursados').value,
                 turno: document.getElementById('turno').value,
                 debtor: document.getElementById('debtor').value,
                 promedio_general: document.getElementById('promedio_general').value,
@@ -68,7 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 creditos: document.getElementById('creditos').value,
                 periodos_restantes: document.getElementById('periodos_restantes').value,
                 scholarship: document.getElementById('scholarship').value,
-                age: document.getElementById('age').value
+                age: document.getElementById('age').value,
+                displaced: document.getElementById('displaced').value
             };
     
             try {

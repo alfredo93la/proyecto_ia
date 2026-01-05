@@ -9,7 +9,7 @@ app = Flask(__name__)
 model = load_model('modelo_dropout.h5')
 scaler = joblib.load('scaler.pkl')
 
-def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anterior, semestre, creditos, periodos_restantes):
+def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anterior, periodos_cursados, creditos, periodos_restantes, displaced):
     """
     Sistema Híbrido Completo: IA + Matemáticas (Viabilidad) + Reglas de Trayectoria
     """
@@ -46,6 +46,10 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
     elif probabilidad > 20:
         recomendaciones.append("**Atención:** Estás en zona de riesgo.")
 
+    # 3. REGLA ESPECÍFICA: FORÁNEOS (NUEVO)
+    if displaced == 1.0:
+        recomendaciones.append("**Apoyo Foráneo:** Al ser foráneo, consulta las becas de 'Transporte' y 'Manutención' del IPN para asegurar tu estabilidad económica.")
+
     # ANÁLISIS DE TRAYECTORIA (Promedios)
     if promedio_anterior < (promedio_general - 1.0):
         recomendaciones.append("**Tendencia Negativa:** Tu rendimiento reciente cayó drásticamente respecto a tu promedio general.")
@@ -64,7 +68,7 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
 
     # REGLAS GENERALES
     if debtor == 1:
-        if semestre >= 9:
+        if periodos_cursados >= 9:
              recomendaciones.append("• **Dictamen:** Tienes adeudos y estás en semestres finales. Revisa tu tiempo máximo.")
         else:
              recomendaciones.append("• **Regularización:** Prioriza salvar materias en ETS antes de adelantar nuevas.")
@@ -85,13 +89,14 @@ def predict():
         data = request.json
         
         # Extracción de variables
-        semestre = int(data['semestre'])
+        periodos_cursados = int(data['periodos_cursados'])
         turno = float(data['turno'])
         debtor = float(data['debtor'])
         scholarship = float(data['scholarship'])
         age = float(data['age'])
         promedio_general = float(data['promedio_general'])
         promedio_anterior = float(data['promedio_anterior'])
+        displaced = float(data['displaced'])
         
         # Variables SAES
         creditos = float(data['creditos'])
@@ -108,17 +113,23 @@ def predict():
         input_data[0, 16] = scholarship
         input_data[0, 17] = age
         input_data[0, 23] = promedio_general * 2  
-        input_data[0, 29] = promedio_anterior * 2 
+        input_data[0, 29] = promedio_anterior * 2
+        input_data[0, 32] = displaced
 
         # Predicción
         input_scaled = scaler.transform(input_data)
         prediction_prob = model.predict(input_scaled)[0][0]
         percentage = round(prediction_prob * 100, 2)
         
-        risk_level = "RIESGO ALTO" if percentage > 50 else "ESTABLE"
-        
+        if percentage > 50:
+            risk_level = "RIESGO ALTO"
+        elif percentage > 20:
+            risk_level = "RIESGO MEDIO"
+        else:
+            risk_level = "RIESGO BAJO"
+
         # Generar Consejos con TODAS las variables
-        consejos = generar_recomendacion(percentage, debtor, promedio_general, promedio_anterior, semestre, creditos, periodos_restantes)
+        consejos = generar_recomendacion(percentage, debtor, promedio_general, promedio_anterior, periodos_cursados, creditos, periodos_restantes, displaced)
 
         return jsonify({
             'probability': percentage,

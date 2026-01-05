@@ -40,7 +40,7 @@
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <label class="form-label small">Periodos esc. cursados</label>
-                                        <select class="form-select form-select-sm" id="semestre" required>
+                                        <select class="form-select form-select-sm" id="periodos_cursados" required>
                                             <option value=""></option>
                                             <option value="1">1</option>
                                             <option value="2">2</option>
@@ -83,12 +83,12 @@
                                 <div class="row g-2 mb-3">
                                     <div class="col-6">
                                         <label class="form-label small">Promedio General</label>
-                                        <input type="number" step="0.1" class="form-control"
+                                        <input type="number" min="0" max="10" step="0.01" class="form-control"
                                             id="promedio_general" placeholder="Acumulado" required>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label small">Promedio Sem. Anterior</label>
-                                        <input type="number" step="0.1" class="form-control"
+                                        <input type="number" min="0" max="10" step="0.01" class="form-control"
                                             id="promedio_anterior" placeholder="Último cursado" required>
                                     </div>
                                 </div>
@@ -97,15 +97,16 @@
                                     <div class="col-6">
                                         <label class="form-label small">Créditos Obtenidos</label>
                                         <div class="input-group input-group-sm">
-                                            <input type="number" step="0.5" class="form-control fw-bold" id="creditos"
-                                                required>
+                                            <input type="number" min="0" max="387" step="0.5"
+                                                class="form-control fw-bold" id="creditos" required>
                                             <span class="input-group-text">/ 387</span>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label small">Periodos Esc. Disponibles</label>
-                                        <input type="number" class="form-control form-control-sm border-warning"
-                                            id="periodos_restantes" required>
+                                        <input type="number" min="0" max="12"
+                                            class="form-control form-control-sm border-warning" id="periodos_restantes"
+                                            required>
                                     </div>
                                 </div>
 
@@ -120,8 +121,16 @@
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label">Edad</label>
-                                        <input type="number" class="form-control" id="age" required>
+                                        <input type="number" min="17" max="99" class="form-control" id="age" required>
                                     </div>
+                                </div>
+                                <div class="mb-3 mt-2">
+                                    <label class="small fw-bold text-muted">ORIGEN</label>
+                                    <select class="form-select form-select-sm" id="displaced">
+                                        <option value="0">Local (CDMX / Área Metrop.)</option>
+                                        <option value="1">Foráneo (Otro Estado)</option>
+                                    </select>
+                                    <div class="form-text small">¿Cambiaste de residencia para estudiar?</div>
                                 </div>
                             </div>
 
