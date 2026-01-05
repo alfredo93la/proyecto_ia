@@ -1,21 +1,14 @@
-/* =========================================
-   VARIABLES GLOBALES
-   (Deben estar afuera para que todos las vean)
-   ========================================= */
-let lastResult = null; // Aquí se guardarán los datos de la predicción
-let myChart = null;    // Aquí vive el gráfico
+let lastResult = null; // datos de la predicción
+let myChart = null;    // para gráfica
 
-/* =========================================
-   FUNCIÓN 1: RENDERIZAR GRÁFICO
-   ========================================= */
+// Gráfica
 function renderChart(percentage) {
     const ctx = document.getElementById('riskChart').getContext('2d');
     const remaining = 100 - percentage;
     
-    // Colores dinámicos
-    let color = '#198754'; // Verde
-    if (percentage > 50) color = '#dc3545';      // Rojo
-    else if (percentage > 25) color = '#ffc107'; // Amarillo
+    let color = '#198754';
+    if (percentage > 50) color = '#dc3545';
+    else if (percentage > 20) color = '#ffc107';
 
     // Limpiar gráfico anterior si existe
     if (myChart) {
@@ -46,67 +39,15 @@ function renderChart(percentage) {
     });
 }
 
-/* =========================================
-   FUNCIÓN 2: DESCARGAR PDF
-   ========================================= */
-function downloadPDF() {
-    console.log("Intentando descargar PDF..."); // Para depuración
-    console.log("Datos guardados:", lastResult); // Ver si está vacío en consola
 
-    // Validación de seguridad
-    if(!lastResult) {
-        alert("Primero debes realizar un análisis para generar el reporte.");
-        return;
-    }
-    
-    // Petición al servidor
-    fetch('/download_report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            risk: lastResult.risk,
-            prob: lastResult.probability,
-            advice: lastResult.advice
-        })
-    })
-    .then(resp => {
-        if (!resp.ok) throw new Error("Error generando PDF");
-        return resp.blob();
-    })
-    .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = 'Dictamen_ESCOM.pdf';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-    })
-    .catch(err => {
-        console.error(err);
-        alert("No se pudo descargar el PDF. Revisa la consola.");
-    });
-}
-
-/* =========================================
-   INICIALIZACIÓN Y EVENTOS
-   ========================================= */
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. Configurar Botón PDF
-    const btnPdf = document.getElementById('btnPdf');
-    if (btnPdf) {
-        btnPdf.addEventListener('click', downloadPDF);
-    }
-
-    // 2. Configurar Formulario de Predicción
+    // Configurar Formulario de Predicción
     const form = document.getElementById('predictionForm');
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault(); 
     
-            // UI: Cambiar a modo "Procesando"
+            // Cambiar a modo "Procesando"
             document.getElementById('state-waiting').style.display = 'none';
             const resultPanel = document.getElementById('state-result');
             resultPanel.style.display = 'block';
@@ -145,19 +86,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
     
-                // --- AQUÍ OCURRE LA MAGIA ---
                 // Guardamos el resultado en la variable global
                 lastResult = result;
                 console.log("Resultado guardado correctamente:", lastResult);
-                // -----------------------------
-    
-                // Actualizar UI con los datos
+                
+                // Mostrar datos
                 document.getElementById('percentageText').innerText = result.probability + "%";
                 
                 riskLabel.innerText = result.risk;
                 if(result.probability > 50) {
                     riskLabel.className = "badge rounded-pill bg-danger px-3 py-2";
-                } else if (result.probability > 25) {
+                } else if (result.probability > 20) {
                     riskLabel.className = "badge rounded-pill bg-warning text-dark px-3 py-2";
                 } else {
                     riskLabel.className = "badge rounded-pill bg-success px-3 py-2";

@@ -9,7 +9,7 @@ df = pd.read_csv('dataset.csv')
 
 # Filtrado y definición del Target
 # La columna 'Target' tiene: 'Dropout', 'Graduate', 'Enrolled'.
-# Para tu objetivo (predecir abandono), convertiremos esto a binario:
+# Para el objetivo predecir abandono, convertiremos esto a binario:
 # 1 = Dropout (Abandono), 0 = No Abandono (Graduate/Enrolled)
 df['Target'] = df['Target'].apply(lambda x: 1 if x == 'Dropout' else 0)
 

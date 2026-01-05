@@ -23,57 +23,46 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
     creditos_faltantes = TOTAL_CREDITOS - creditos
     avance_pct = (creditos / TOTAL_CREDITOS) * 100
 
-    # ---------------------------------------------------------
-    # 1. ANÁLISIS DE VIABILIDAD MATEMÁTICA (CRÍTICO - PERIODOS)
-    # ---------------------------------------------------------
+    # ANÁLISIS DE CRÉDITOS RESTANTES
     velocidad_necesaria = 0
     if periodos_restantes > 0:
         velocidad_necesaria = creditos_faltantes / periodos_restantes
         
         if creditos_faltantes <= 0:
-            recomendaciones.append("**¡FELICIDADES!** Has cubierto el 100% de créditos. Inicia trámite de certificado.")
+            recomendaciones.append("**¡FELICIDADES!** Has cubierto el 100% de créditos. Inicia trámite de titulación.")
         elif velocidad_necesaria > CARGA_MAXIMA:
-            recomendaciones.append(f"**IMPOSIBLE TERMINAR:** Matemáticamente no puedes acabar. Necesitas {velocidad_necesaria:.1f} créditos/semestre y el máximo es {CARGA_MAXIMA}. Revisa reglamento.")
+            recomendaciones.append(f"**IMPOSIBLE TERMINAR:** Matemáticamente no puedes acabar. Necesitas {velocidad_necesaria:.1f} créditos/semestre y el máximo es {CARGA_MAXIMA}. Consulta a Control Escolar.")
         elif velocidad_necesaria > (CARGA_MAXIMA - 15):
-            recomendaciones.append(f"**ALERTA MÁXIMA:** Estás al límite. Necesitas meter {velocidad_necesaria:.1f} créditos (Sobrecarga) todos los semestres restantes.")
+            recomendaciones.append(f"**ALERTA MÁXIMA:** Estás al límite. Necesitas meter {velocidad_necesaria:.1f} créditos todos los semestres restantes.")
         elif velocidad_necesaria > (CARGA_MEDIA + 5):
             recomendaciones.append(f"**Acelerar Paso:** Necesitas promediar {velocidad_necesaria:.1f} créditos por semestre (más de la carga media).")
     else:
         if creditos_faltantes > 0:
-            recomendaciones.append("**TIEMPO AGOTADO:** Se acabaron tus periodos reglamentarios y aún debes créditos. Situación de Dictamen.")
+            recomendaciones.append("**TIEMPO AGOTADO:** Se acabaron tus periodos reglamentarios y aún debes créditos.")
 
-    # ---------------------------------------------------------
-    # 2. ANÁLISIS DE RIESGO (IA)
-    # ---------------------------------------------------------
-    if probabilidad > 60:
-        recomendaciones.append("**Alerta Crítica (IA):** Riesgo muy alto detectado por patrones históricos.")
-    elif probabilidad > 40:
-        recomendaciones.append("**Atención:** Estás en zona de riesgo. No descuides materias.")
+    # ANÁLISIS DE RIESGO (Redes Neuronales)
+    if probabilidad > 50:
+        recomendaciones.append("**Alerta Crítica:** Riesgo muy alto detectado por patrones históricos.")
+    elif probabilidad > 20:
+        recomendaciones.append("**Atención:** Estás en zona de riesgo.")
 
-    # ---------------------------------------------------------
-    # 3. ANÁLISIS DE TRAYECTORIA (RESTAURADO)
-    # ---------------------------------------------------------
-    # Compara si el alumno bajó su rendimiento respecto a su histórico
+    # ANÁLISIS DE TRAYECTORIA (Promedios)
     if promedio_anterior < (promedio_general - 1.0):
         recomendaciones.append("**Tendencia Negativa:** Tu rendimiento reciente cayó drásticamente respecto a tu promedio general.")
     elif promedio_anterior > (promedio_general + 0.5):
         recomendaciones.append("**Tendencia Positiva:** ¡Bien! Estás subiendo tu promedio respecto a tu histórico.")
 
     if promedio_general < 6.0:
-        recomendaciones.append("• **Tutorías:** Tienes promedio crítico. Inscríbete al programa de tutorías institucional.")
+        recomendaciones.append("• **Promedio reprobatorio:** Tu promedio es crítico. Considera regularización.")
 
-    # ---------------------------------------------------------
-    # 4. HITOS CURRICULARES (SAES)
-    # ---------------------------------------------------------
+    # PORCENTAJES DE AVANCE
     if 60 <= avance_pct < 70:
-        recomendaciones.append(f"• **Servicio Social:** Tienes {avance_pct:.1f}% de avance. Estás cerca de poder iniciar tu Servicio Social.")
+        recomendaciones.append(f"• **Protocolo de TT:** Tienes {avance_pct:.1f}% de avance. Empieza a buscar tema de Trabajo Terminal.")
     
     if avance_pct >= 70:
-        recomendaciones.append("• **Titulación:** Superaste el 70%. Ya puedes iniciar tu Servicio Social. Empieza a buscar tema de Trabajo Terminal.")
+        recomendaciones.append("• **Titulación:** Superaste el 70%. Ya puedes iniciar tu Servicio Social y Estancia Profesional.")
 
-    # ---------------------------------------------------------
-    # 5. REGLAS GENERALES
-    # ---------------------------------------------------------
+    # REGLAS GENERALES
     if debtor == 1:
         if semestre >= 9:
              recomendaciones.append("• **Dictamen:** Tienes adeudos y estás en semestres finales. Revisa tu tiempo máximo.")
@@ -82,7 +71,7 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
 
     # Mensaje por defecto
     if not recomendaciones:
-        recomendaciones.append(f"✅ **Mantenimiento:** Buen ritmo. Necesitas {velocidad_necesaria:.1f} créditos/semestre para graduarte a tiempo.")
+        recomendaciones.append(f"**Mantenimiento:** Buen ritmo. Necesitas {velocidad_necesaria:.1f} créditos/semestre para graduarte a tiempo.")
 
     return recomendaciones
 

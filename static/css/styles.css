@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #6c1d45; /* Guinda Institucional */
+    --primary-color: #6c1d45;
     --secondary-color: #f0f2f5;
-    --accent-color: #bc955c; /* Dorado Institucional */
+    --accent-color: #bc955c;
 }
 
 body { 
@@ -48,7 +48,7 @@ body {
 }
 
 .result-panel {
-    display: none; /* Oculto al inicio */
+    display: none;
     background-color: #fff;
     border-radius: 12px;
     padding: 25px;
@@ -62,7 +62,6 @@ body {
     border-radius: 50px;
 }
 
-/* Animación suave */
 .fade-in {
     animation: fadeIn 0.5s ease-in;
 }
