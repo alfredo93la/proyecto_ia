@@ -10,9 +10,6 @@ model = load_model('modelo_dropout.h5')
 scaler = joblib.load('scaler.pkl')
 
 def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anterior, periodos_cursados, creditos, periodos_restantes, displaced):
-    """
-    Sistema Híbrido Completo: IA + Matemáticas (Viabilidad) + Reglas de Trayectoria
-    """
     recomendaciones = []
     
     # CONSTANTES ESCOM
