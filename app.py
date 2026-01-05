@@ -17,8 +17,8 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
     
     # CONSTANTES ESCOM
     TOTAL_CREDITOS = 387.0
-    CARGA_MAXIMA = 78.0
-    CARGA_MEDIA = 48.0
+    CARGA_MAXIMA = 77.4
+    CARGA_MEDIA = 48.38
     
     creditos_faltantes = TOTAL_CREDITOS - creditos
     avance_pct = (creditos / TOTAL_CREDITOS) * 100
