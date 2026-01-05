@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let cleanItem = item.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
                     let li = document.createElement('li');
                     li.className = "mb-2";
-                    li.innerHTML = `<i class="bi bi-check2-circle text-success me-2"></i>${cleanItem}`;
+                    li.innerHTML = `<i class="bi bi-star text-success me-2"></i>${cleanItem}`;
                     list.appendChild(li);
                 });
     

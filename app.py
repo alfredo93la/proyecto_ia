@@ -26,7 +26,7 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
         velocidad_necesaria = creditos_faltantes / periodos_restantes
         
         if creditos_faltantes <= 0:
-            recomendaciones.append("**¡FELICIDADES!** Has cubierto el 100% de créditos. Inicia trámite de titulación.")
+            recomendaciones.append("**¡FELICIDADES!** Has cubierto todos los créditos. Inicia trámite de titulación.")
         elif velocidad_necesaria > CARGA_MAXIMA:
             recomendaciones.append(f"**IMPOSIBLE TERMINAR:** Matemáticamente no puedes acabar. Necesitas {velocidad_necesaria:.1f} créditos/semestre y el máximo es {CARGA_MAXIMA}. Consulta a Control Escolar.")
         elif velocidad_necesaria > (CARGA_MAXIMA - 15):
@@ -54,21 +54,21 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
         recomendaciones.append("**Tendencia Positiva:** ¡Bien! Estás subiendo tu promedio respecto a tu histórico.")
 
     if promedio_general < 6.0:
-        recomendaciones.append("• **Promedio reprobatorio:** Tu promedio es crítico. Considera regularización.")
+        recomendaciones.append("**Promedio reprobatorio:** Tu promedio es crítico. Considera regularización.")
 
     # PORCENTAJES DE AVANCE
     if 60 <= avance_pct < 70:
-        recomendaciones.append(f"• **Protocolo de TT:** Tienes {avance_pct:.1f}% de avance. Empieza a buscar tema de Trabajo Terminal.")
+        recomendaciones.append(f"**Protocolo de TT:** Tienes {avance_pct:.1f}% de avance. Empieza a buscar tema de Trabajo Terminal.")
     
     if avance_pct >= 70:
-        recomendaciones.append("• **Titulación:** Superaste el 70%. Ya puedes iniciar tu Servicio Social y Estancia Profesional.")
+        recomendaciones.append("**Titulación:** Superaste el 70%. Ya puedes iniciar tu Servicio Social y Estancia Profesional.")
 
     # REGLAS GENERALES
     if debtor == 1:
         if periodos_cursados >= 9:
-             recomendaciones.append("• **Dictamen:** Tienes adeudos y estás en semestres finales. Revisa tu tiempo máximo.")
+             recomendaciones.append("**Dictamen:** Tienes adeudos y estás en semestres finales. Revisa tu tiempo máximo.")
         else:
-             recomendaciones.append("• **Regularización:** Prioriza salvar materias en ETS antes de adelantar nuevas.")
+             recomendaciones.append("**Regularización:** Prioriza salvar materias en ETS antes de adelantar nuevas.")
 
     # Mensaje por defecto
     if not recomendaciones:
