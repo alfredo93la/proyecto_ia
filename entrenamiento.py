@@ -18,9 +18,8 @@ print(f"Entrenando con {input_dim} características de entrada.")
 model = Sequential()
 
 # Primera capa oculta (64 neuronas, activación ReLU)
-# input_shape es necesario solo en la primera capa
 model.add(Dense(64, input_shape=(input_dim,), activation='relu'))
-model.add(Dropout(0.2)) # Apaga el 20% de neuronas al azar para evitar memorización (Overfitting)
+model.add(Dropout(0.2)) 
 
 # Segunda capa oculta (32 neuronas, activación ReLU)
 model.add(Dense(32, activation='relu'))
@@ -30,13 +29,9 @@ model.add(Dropout(0.2))
 model.add(Dense(1, activation='sigmoid'))
 
 # Compilar el modelo
-# Loss: Binary Crossentropy es la función de pérdida estándar para clasificación binaria
-# Optimizer: Adam es eficiente y autoadaptable
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 # Entrenar el modelo
-# Epochs: Cuántas veces la red ve el dataset completo
-# Batch_size: Cuántos ejemplos procesa antes de actualizar sus pesos
 history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.2, verbose=1)
 
 # Evaluar el modelo con datos que nunca ha visto (Test set)

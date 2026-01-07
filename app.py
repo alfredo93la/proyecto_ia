@@ -43,7 +43,7 @@ def generar_recomendacion(probabilidad, debtor, promedio_general, promedio_anter
     elif probabilidad > 20:
         recomendaciones.append("**Atención:** Estás en zona de riesgo.")
 
-    # 3. REGLA ESPECÍFICA: FORÁNEOS (NUEVO)
+    # REGLA FORÁNEOS
     if displaced == 1.0:
         recomendaciones.append("**Apoyo Foráneo:** Al ser foráneo, consulta las becas de 'Transporte' y 'Manutención' del IPN para asegurar tu estabilidad económica.")
 
